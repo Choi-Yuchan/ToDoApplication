@@ -9,8 +9,8 @@
 <script>
 export default {
     methods: {
-        clearTodo: function(){
-            localStorage.clear();
+        clearTodo(){
+            this.$store.commit('clearAllItem')
         }
     }
 }
@@ -28,5 +28,6 @@ export default {
     .clearAllBtn {
         color: #e20303;
         display: block;
+        cursor: pointer;
     }
 </style>

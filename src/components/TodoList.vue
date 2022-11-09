@@ -1,7 +1,7 @@
 <template lang="">
     <div>
-        <ul>
-            <li v-for="(todoItem, index) in todoItems" v-bind:key="todoItem.key" class="shadow">
+        <transition-group name="list" tag="ul">
+            <li v-for="(todoItem, index) in this.$store.state.todoItems" v-bind:key="todoItem.item" class="shadow">
                 <i class="checkBtn fa-solid fa-check" @click="toggleComplete(todoItem, index)" v-bind:class="{checkBtnCompleted: todoItem.completed}"></i>
                 <span v-bind:class="{textCompleted: todoItem.completed}">
                     {{todoItem.item}}
@@ -10,37 +10,17 @@
                     <i class="fa-solid fa-trash-can"></i>
                 </span>
             </li>
-        </ul>
+        </transition-group>
     </div>
 </template>
 <script>
 export default {
-    data: function(){
-        return {
-            todoItems: []
-        }
-    },
-    created: function(){
-        if(localStorage.length > 0) {
-            for (var i = 0; i < localStorage.length; i++){
-                if(localStorage.key(i) !== 'loglevel:webpack-dev-server'){
-                    this.todoItems.push(JSON.parse(localStorage.getItem(localStorage.key(i))));
-                }
-            }
-        }
-        console.log('created')
-    },
     methods:{
-        removeTodo: function(todoItem, index) {
-            if(this.todoItems[index] == todoItem){
-                localStorage.removeItem(todoItem);
-                this.todoItems.splice(index, 1);
-            }
+        removeTodo(todoItem, index) {
+            this.$store.commit('removeOneItem', {todoItem, index});
         },
-        toggleComplete: function(todoItem, index){
-            todoItem.completed = !todoItem.completed
-            localStorage.removeItem(todoItem.item);
-            localStorage.setItem(todoItem.item, JSON.stringify((todoItem)));
+        toggleComplete(todoItem, index){
+            this.$store.commit('toggleOneItem', {todoItem, index});
         }
     }
 }
@@ -77,5 +57,13 @@ export default {
     .removeBtn {
         margin-left: auto;
         color: #de4343;
+    }
+    /* List Item Transition */
+    .list-enter-active, .list-leave-active {
+        transition: all 1s;
+    }
+    .list-enter, .list-leave-to {
+        opacity: 0;
+        transform: translateY(30px);
     }
 </style>

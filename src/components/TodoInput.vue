@@ -1,33 +1,53 @@
 <template lang="">
-    <div class="inputBox shadow">
-        <input type="text" v-model="newTodoItem" @keyup.enter="addTodo">
-        <span class="addContainer" @click="addTodo" >
-            <i class="fa-solid fa-plus addBtn"></i>
-        </span>
-        
+    <div>
+        <div class="inputBox shadow">
+            <input type="text" v-model="newTodoItem" @keyup.enter="addTodo">
+            <span class="addContainer" @click="addTodo" >
+                <i class="fa-solid fa-plus addBtn"></i>
+            </span>
+        </div>
+        <ModalVue v-if="showModal" @close="showModal = false">
+            <h3 slot="header">
+                Warning!
+                <button class="modal-default-button" @click="showModal = false">
+                    <i class="closeModalBtn fa-solid fa-x"></i>
+                </button>
+            </h3>
+
+            <div slot="body">You should write anything!</div>
+            <p slot="footer">©Logan</p>
+        </ModalVue>
     </div>
 </template>
 
 <script>
+import ModalVue from './common/Modal.vue';
 
 export default {
-    data:function(){
+    data(){
         return{
-            newTodoItem: ""
+            newTodoItem: "",
+            showModal: false  
         }
     },
     methods:{
-        clearInput: function(){
+        clearInput(){
             this.newTodoItem = '';
         },
-        addTodo: function(){
+        addTodo(){
             if(this.newTodoItem !== ''){
-                var obj = {completed: false, item: this.newTodoItem}
-                localStorage.setItem(this.newTodoItem, JSON.stringify(obj));
+                const text = this.newTodoItem.trim(); 
+                this.$store.commit('addAnItem', text);
                 this.clearInput();
+            } else {
+                this.showModal = !this.showModal;
             }
         },
+
     },
+    components: {
+        ModalVue
+    }
 }
 </script>
 
@@ -55,5 +75,8 @@ export default {
     .addBtn {
         color: white;
         vertical-align: middle;
+    }
+    .closeModalBtn {
+        color: #42b983;
     }
 </style>
